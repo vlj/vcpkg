@@ -1,0 +1,79 @@
+From a93a0e3b6026a19de45d9a5cf15ee1620bd43840 Mon Sep 17 00:00:00 2001
+From: Vincent Lejeune <vljn.ovi@gmail.com>
+Date: Fri, 29 Dec 2017 23:48:03 +0100
+Subject: [PATCH] Fix OpenCL detection by CMake.
+
+---
+ cmake/ViennaCLCommon.cmake | 12 +-----------
+ libviennacl/CMakeLists.txt |  5 +++--
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/cmake/ViennaCLCommon.cmake b/cmake/ViennaCLCommon.cmake
+index 6957fe8..34aecd6 100644
+--- a/cmake/ViennaCLCommon.cmake
++++ b/cmake/ViennaCLCommon.cmake
+@@ -137,13 +137,7 @@ if(ENABLE_MTL4)
+    find_package(MTL REQUIRED)
+ endif()
+ 
+-if (ENABLE_OPENCL)
+-  include_directories(
+-   "${PROJECT_SOURCE_DIR}"
+-   ${OPENCL_INCLUDE_DIRS})
+-else (ENABLE_OPENCL)
+-  include_directories("${PROJECT_SOURCE_DIR}")
+-endif(ENABLE_OPENCL)
++include_directories("${PROJECT_SOURCE_DIR}")
+ 
+ # Set high warning level on GCC
+ if(ENABLE_PEDANTIC_FLAGS)
+@@ -159,9 +153,6 @@ endif()
+ # Export
+ ########
+ 
+-configure_file(cmake/FindOpenCL.cmake
+-   "${PROJECT_BINARY_DIR}/FindOpenCL.cmake" COPYONLY)
+-
+ configure_file(cmake/ViennaCLConfig.cmake.in
+    "${PROJECT_BINARY_DIR}/ViennaCLConfig.cmake" @ONLY)
+ 
+@@ -176,7 +167,6 @@ endif()
+ #########
+ 
+ install(FILES
+-   "${PROJECT_BINARY_DIR}/FindOpenCL.cmake"
+    "${PROJECT_BINARY_DIR}/ViennaCLConfig.cmake"
+    "${PROJECT_BINARY_DIR}/ViennaCLConfigVersion.cmake"
+    DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+diff --git a/libviennacl/CMakeLists.txt b/libviennacl/CMakeLists.txt
+index d2f83e5..813e8ba 100644
+--- a/libviennacl/CMakeLists.txt
++++ b/libviennacl/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ 
+ include_directories(${PROJECT_SOURCE_DIR}/libviennacl/include/)
++find_package(OpenCL REQUIRED)
+ 
+ if(ENABLE_CUDA)
+ 
+@@ -10,7 +11,7 @@ if(ENABLE_CUDA)
+                                      src/blas2.cu src/blas2_host.cu src/blas2_cuda.cu src/blas2_opencl.cu
+                                      src/blas3.cu src/blas3_host.cu src/blas3_cuda.cu src/blas3_opencl.cu)
+     set_target_properties(viennacl PROPERTIES COMPILE_FLAGS "-DVIENNACL_WITH_OPENCL -DVIENNACL_WITH_CUDA")
+-    target_link_libraries(viennacl ${OPENCL_LIBRARIES})
++    target_link_libraries(viennacl OpenCL::OpenCL)
+   else(ENABLE_OPENCL)
+     cuda_add_library(viennacl SHARED src/backend.cu
+                                      src/blas1.cu src/blas1_host.cu src/blas1_cuda.cu
+@@ -25,7 +26,7 @@ else(ENABLE_CUDA)
+                                 src/blas2.cpp src/blas2_host.cpp src/blas2_opencl.cpp
+                                 src/blas3.cpp src/blas3_host.cpp src/blas3_opencl.cpp)
+     set_target_properties(viennacl PROPERTIES COMPILE_FLAGS "-DVIENNACL_WITH_OPENCL")
+-    target_link_libraries(viennacl ${OPENCL_LIBRARIES})
++    target_link_libraries(viennacl OpenCL::OpenCL)
+   else(ENABLE_OPENCL)
+     add_library(viennacl SHARED src/backend.cpp
+                                 src/blas1.cpp src/blas1_host.cpp
+-- 
+2.14.1.windows.1
+
