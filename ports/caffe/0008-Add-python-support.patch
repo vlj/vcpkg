@@ -1,0 +1,64 @@
+From 9508789b56af88f1349ad8dacb9f4676f0a73fab Mon Sep 17 00:00:00 2001
+From: Vincent Lejeune <vljn.ovi@gmail.com>
+Date: Sun, 14 Jan 2018 19:05:58 +0100
+Subject: [PATCH 8/8] Add python support.
+
+---
+ cmake/Dependencies.cmake | 2 +-
+ python/CMakeLists.txt    | 2 +-
+ python/caffe/_caffe.cpp  | 6 ++++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/cmake/Dependencies.cmake b/cmake/Dependencies.cmake
+index f8062c9e..8097abd0 100644
+--- a/cmake/Dependencies.cmake
++++ b/cmake/Dependencies.cmake
+@@ -168,7 +168,7 @@ if(BUILD_python)
+     find_package(NumPy 1.7.1)
+     find_package(Boost 1.46 COMPONENTS python)
+   endif()
+-  if(PYTHONLIBS_FOUND AND NUMPY_FOUND AND Boost_PYTHON_FOUND)
++  if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
+     set(HAVE_PYTHON TRUE)
+     if(BUILD_python_layer)
+       list(APPEND Caffe_DEFINITIONS PRIVATE -DWITH_PYTHON_LAYER)
+diff --git a/python/CMakeLists.txt b/python/CMakeLists.txt
+index c53299d2..d5abbc5c 100644
+--- a/python/CMakeLists.txt
++++ b/python/CMakeLists.txt
+@@ -9,7 +9,7 @@ add_library(pycaffe SHARED ${python_srcs})
+ caffe_default_properties(pycaffe)
+ set_target_properties(pycaffe PROPERTIES PREFIX "" OUTPUT_NAME "_caffe")
+ target_include_directories(pycaffe PUBLIC ${PYTHON_INCLUDE_DIRS} ${NUMPY_INCLUDE_DIR})
+-target_link_libraries(pycaffe PUBLIC ${Caffe_LINK} ${PYTHON_LIBRARIES})
++target_link_libraries(pycaffe PUBLIC caffe ${PYTHON_LIBRARIES})
+ 
+ if(UNIX OR APPLE)
+     set(__linkname "${PROJECT_SOURCE_DIR}/python/caffe/_caffe.so")
+diff --git a/python/caffe/_caffe.cpp b/python/caffe/_caffe.cpp
+index d7f43fff..e323be8a 100644
+--- a/python/caffe/_caffe.cpp
++++ b/python/caffe/_caffe.cpp
+@@ -53,15 +53,17 @@ void set_mode_gpu() { Caffe::set_mode(Caffe::GPU); }
+ 
+ void InitLog() {
+   ::google::InitGoogleLogging("");
++#if defined(MSVC)
+   ::google::InstallFailureSignalHandler();
++#endif
+ }
+ void InitLogLevel(int level) {
+   FLAGS_minloglevel = level;
+   InitLog();
+ }
+-void InitLogLevelPipe(int level, bool stderr) {
++void InitLogLevelPipe(int level, bool _stderr) {
+   FLAGS_minloglevel = level;
+-  FLAGS_logtostderr = stderr;
++  FLAGS_logtostderr = _stderr;
+   InitLog();
+ }
+ void Log(const string& s) {
+-- 
+2.14.1.windows.1
+
