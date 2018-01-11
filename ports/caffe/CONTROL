@@ -1,0 +1,4 @@
+Source: caffe
+Version: 1.0
+Build-Depends: lmdb, gflags, glog, boost, hdf5, protobuf, openblas
+Description: Deep learning framework.
