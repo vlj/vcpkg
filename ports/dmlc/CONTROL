@@ -1,0 +1,4 @@
+Source: dmlc
+Version: 1.0
+Description: A common bricks library for building scalable and portable distributed machine learning. 
+
