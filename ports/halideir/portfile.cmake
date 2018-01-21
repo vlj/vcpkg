@@ -22,7 +22,9 @@ vcpkg_configure_cmake(
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()
 
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
+
 # install license
-file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/dlpack/LICENSE)
-file(RENAME ${CURRENT_PACKAGES_DIR}/share/dlpack/LICENSE ${CURRENT_PACKAGES_DIR}/share/dlpack/copyright)
+file(COPY ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/halideir/LICENSE)
+file(RENAME ${CURRENT_PACKAGES_DIR}/share/halideir/LICENSE ${CURRENT_PACKAGES_DIR}/share/halideir/copyright)
 
