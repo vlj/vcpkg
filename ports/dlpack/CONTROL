@@ -1,0 +1,4 @@
+Source: dlpack
+Version: 1.0
+Description: RFC for common in-memory tensor structure and operator interface for deep learning system 
+
